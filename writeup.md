@@ -146,30 +146,42 @@ Here are the logs (click for fullsize images):
 
 #### 4. Describe the approach taken for finding a solution and getting the validation set accuracy to be at least 0.93. Include in the discussion the results on the training, validation and test sets and where in the code these were calculated. Your approach may have been an iterative process, in which case, outline the steps you took to get to the final solution and why you chose those steps. Perhaps your solution involved an already well known implementation or architecture. In this case, discuss why you think the architecture is suitable for the current problem.
 
+As stated above, I started with a LeNet architecture because it is well-known to be a good solution to classifying images.  The use-case of 43 traffic signs should have been (and was) well within its abilities. The final results of getting 0.944 on the unseen test-data after training speaks volumes of the value of LeNet for this type of task.
+
+My whole process can be followed from the logs whose thumbnails are above (click the thumbnails to see large images which are legible).
+
+The top-level plan was to get a solid base, then add the laundry-list of tactics that we learned in the lessons in, one-at-a-time and measure their results. Due to some confusion caused by data-pollution in the Jupyter Notebook, the reality was slightly less linear, but it followed the same basic principle.
+
+Basically my process consisted of:
+1. Get it to run basic LeNet to completion without crashing
+2. Thinking I had 0.945 accurracy and starting to experiment.
+3. Spending a long time flailing at trying other methods to try to regain the 0.945 accuracy
+4. Finally realizing that the very early 0.945 was some kind of fluke potentially related to weird data in the Jupyter notebook. My current hypothesis was that I did too much pre-processing to a point that my data became so battered that it was all basically the same (so my validation data was very similar near-blank images to the near-blank images I was training with).
+5. Removing all tweaks and debugging the low-accuracy state until I found some bugs and got vanilla LeNet to perform decently. 0.7-0.8
+6. Slowly doing experiments on each feature to determine if it made accuracy better or worse.
+  1. Various types of normalization (oddly, having no normalization was the best)
+  2. Grayscale preprocessing (grayscaling consistently improved accuracy)
+  3. Dropout (when only using it in the fully-connected layers it seemed to have a slight benefit & prevented overfitting - a keep_prob of 0.7 did measurably better than 0.5)
+  4. Adding rotated versions of images, to classes with a small number of training images (and testing various rotation angles)
+  5. Tested various hyperparameters for Learning Rate (0.001 worked best) and Epoch size (and eventually came up with a solution that allows me to do 10 and add on sets of 10 more epochs at will - 20 to 30 Epochs seemed to work best once Dropout was in there).
+  6. Max Pooling vs Avg Pooling (Avg was way better)
+  7. Trying normalization again because I couldn't believe that it really hurt accuracy (it still hurt accuracy so I kept it out after this)
+  8. Tweaked batch-sizes some more (256 had slightly better accuracy than 512, but this should be due to just random luck since batch size shouldn't affect accuracy, it mainly affects training).
+  9. Experimented with layer sizes.  Larger convolutional layers made intuitive sense because there are more features in traffic signs than in digits from 1 to 10.  Took a good guess then increased up and down a bit to try to find a sweet-spot.
+  10. With the system performing well above the required amount every time I retrained it, I decided to run it against the test-data and that also performed above the goal.
+
+My final model results were:
+* **validation set accuracy of 0.960**
+* **test set accuracy of 0.944**
+
+
+
 
 
 NOTE: CURRENTLY THIS FAR IN THE WRITEUP... <---------------------------------------------------
 
 
 
-
-
-My final model results were:
-* training set accuracy of ?
-* validation set accuracy of ? 
-* test set accuracy of ?
-
-If an iterative approach was chosen:
-* What was the first architecture that was tried and why was it chosen?
-* What were some problems with the initial architecture?
-* How was the architecture adjusted and why was it adjusted? Typical adjustments could include choosing a different model architecture, adding or taking away layers (pooling, dropout, convolution, etc), using an activation function or changing the activation function. One common justification for adjusting an architecture would be due to overfitting or underfitting. A high accuracy on the training set but low accuracy on the validation set indicates over fitting; a low accuracy on both sets indicates under fitting.
-* Which parameters were tuned? How were they adjusted and why?
-* What are some of the important design choices and why were they chosen? For example, why might a convolution layer work well with this problem? How might a dropout layer help with creating a successful model?
-
-If a well known architecture was chosen:
-* What architecture was chosen?
-* Why did you believe it would be relevant to the traffic sign application?
-* How does the final model's accuracy on the training, validation and test set provide evidence that the model is working well?
  
 
 ###Test a Model on New Images
