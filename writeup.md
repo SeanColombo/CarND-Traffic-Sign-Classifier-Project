@@ -14,6 +14,8 @@ The goals / steps of this project are the following:
 
 [histogram_1]: ./writeup_images/visualization.png "Visualization - Histogram of images per class"
 [histogram_2]: ./writeup_images/visualization_moredata.png "Histogram of images per class after adding additional data (via rotating other data)"
+[logs_1]: ./writeup_images/logs_page1.jpg "Logs - Page 1"
+[logs_2]: ./writeup_images/logs_page2.jpg "Logs - Page 2"
 [image3]: ./examples/random_noise.jpg "Random Noise"
 [image4]: ./examples/placeholder.png "Traffic Sign 1"
 [image5]: ./examples/placeholder.png "Traffic Sign 2"
@@ -59,7 +61,7 @@ Looking at this histogram, it can be seen that a large number of classes have WA
 
 To first address the "Stand Out Suggestions", the prior histogram revealed that the training data was very un-even and many classes had an insufficient amount of images.
 
-To solve this problem, I created a minimum number of images (originally I used the mean which is around 750, but experimentation found that 500 works at least as well) and then generated images to fill out all of the undersized classes.  The extra images were created by repeatedly selecting a random image from the input data-set, then rotating it by +/- 5-degrees to 20-degrees (the angle and the sign were chosen randomly).
+To solve this problem, I created a minimum number of images (originally I used the mean which is around 750, but experimentation found that 500 works at least as well) and then generated images to fill out all of the undersized classes.  The extra images were created by repeatedly selecting a random image from the input data-set, then rotating it by +/- 5-degrees to 20-degrees (the angle and the sign were chosen randomly). I had also exprimented with angles between +/- 10 and 20 degrees, but lowering the boundary to 5 degrees seemed to increase accuracy slightly.
 
 | ![original data histogram][histogram_1] | ![histogram of classes after adding additional images][histogram_2] |
 |:---:|:---:|
@@ -86,7 +88,7 @@ This is not consistent with what I would have expected, so I did some debugging 
 
 The model was started as a LeNet architecture (since that is known to be good at classifying images) and then tweaked in a few spots.
 
-I found that replacing Max-Pooling with Avg-Pooling had great results.
+I found that replacing Max-Pooling with Avg-Pooling had great results. It was one of the most significant changes in the entire project. It brought accuracy from around 0.84 to around 0.90 immediately!
 
 Since there are more features to a class of 43 streetsigns than there are in the 0-10 digits that we initially wrote our LeNet for, I also experimented with increasing the sizes of the 2 convolutional layers since those layers represent features.  I increased the values approximately proportionally to the difference in the number of total output-classes between digits and our set of German traffic signs. Further tuning was done by just testing the results and finding what sizes performed well in the first 10 epochs of training.
 
@@ -115,22 +117,42 @@ My final model consisted of the following layers:
 | Fully connected		| Fully connected layer. Input 84, output number_of_classes (43 in this case)					|
 
 
+#### 3. Describe how you trained your model. The discussion can include the type of optimizer, the batch size, number of epochs and any hyperparameters such as learning rate.
+
+To train the model, I used the AdamOptimizer and had the loss operation reduce the mean of cross-entropy. This worked great in my prior LeNet lab so I kept it.
+
+I experimented with various hyper-parameters:
+
+**Learning Rate** Although 0.005 showed some promise, 0.001 seemed to be the optimal learning rate. Higher values would cause the model to flail
+
+**Epochs** 10 Epochs was used for much of my testing (just due to time-constraints) but I created a cell that would allow me to re-load existing progress and add 10 more epochs to the same model. I noticed that once I had the dropout added, I was able to continue to train the model to 20 or 30 epochs and continue to see gains in accuracy.
+
+In my final notebook, it would run the additional loop one time automatically (then I would typically run it one more time by hand) to end at **30 epochs**.  There was consisten improvement between 10 and 20 epochs. There was often an improvement between 20 and 30 epochs, but not always, and it wasn't very high.
+
+**Keep Probability for Dropout** - running with a keep_prob of 0.5 was a bit too harsh for the model and would probably perform better if there had been more training data. Upping the keep probability to 0.7 resulted in much more stable accuracy.
+
+**Batch size** - typically, increasing the batch size just makes your model train faster up until the point where you start running into memory issues and either crashing or swapping.  Using `top` on the AWS instance I was running, then extrapolating, I was able to see that a batch size of 512 could safely be handled without getting near the memory boundaries of the instance.  Interestingly, turning the batch-size down to 256 resulted in slightly better accuracy 
+
+**SIDE-NOTE: Audio** - you may have noticed a small audio file at the bottom of the training sections. Training took around 200 seconds for every 10 epochs, which lead to a great deal of waste - I would go off to study another part of the code, then not be able to start my next batch of testing immediately because I would not know when the training had completed - so I made the code output and auto-play a sound-file immediately upon completion of training the network.  This allowed me to test a ton more iterations of my architecture much faster than normal (I shared the code in the CARND Slack, so hopefully you'll see other projects with this, as well).
+
+For all of these hyperparameters, it was tricky to tune because the variance in accuracy between any two random runs was high enough to obscure any small improvements in performance (and since training takes so long, I couldn't just smooth out those errors by testing repeatedly).  To ensure that I didn't get lost, I kept a log (the columns run right-to-left on the first page, sorry) where I would make notes of what I changed, as well as the accuracy of the model after the changes (on the test set).  Only once I was satisfied with my training accuracy did I start also using the final test set.  The last batch of stats after "unlocking" the test data were all nearly identical code, I just had to run it several times while I was testing optional outputting of the feature map, so I figured I might as well record the results of each of those runs since they were relatively time-expensive. The results do show that the model consistently trains around 0.96 and peaked at around 0.97.  The final test set was consistently above 0.93 but the highest it got was 0.944.  The test set scoring slightly lower implies a little bit of overfitting to the training data.
+
+Here are the logs (click for fullsize images):
+
+<img src="./writeup_images/logs_page1.jpg" width="300" title="Columns are right-to-left (sorry)">
+
+<img src="./writeup_images/logs_page2.jpg" width="300" title="Final logs">
+
+
+#### 4. Describe the approach taken for finding a solution and getting the validation set accuracy to be at least 0.93. Include in the discussion the results on the training, validation and test sets and where in the code these were calculated. Your approach may have been an iterative process, in which case, outline the steps you took to get to the final solution and why you chose those steps. Perhaps your solution involved an already well known implementation or architecture. In this case, discuss why you think the architecture is suitable for the current problem.
+
+
+
+NOTE: CURRENTLY THIS FAR IN THE WRITEUP... <---------------------------------------------------
 
 
 
 
-
-
-NOTE: CURRENTLY THIS FAR IN THE WRITEUP... GOING TO PULL SOME IMAGES INTO THE REPO THEN CONTINUE...
-
-
-
-
-####3. Describe how you trained your model. The discussion can include the type of optimizer, the batch size, number of epochs and any hyperparameters such as learning rate.
-
-To train the model, I used an ....
-
-####4. Describe the approach taken for finding a solution and getting the validation set accuracy to be at least 0.93. Include in the discussion the results on the training, validation and test sets and where in the code these were calculated. Your approach may have been an iterative process, in which case, outline the steps you took to get to the final solution and why you chose those steps. Perhaps your solution involved an already well known implementation or architecture. In this case, discuss why you think the architecture is suitable for the current problem.
 
 My final model results were:
 * training set accuracy of ?
