@@ -84,35 +84,46 @@ This is not consistent with what I would have expected, so I did some debugging 
 
 #### 2. Describe what your final model architecture looks like including model type, layers, layer sizes, connectivity, etc.) Consider including a diagram and/or table describing the final model.
 
+The model was started as a LeNet architecture (since that is known to be good at classifying images) and then tweaked in a few spots.
+
+I found that replacing Max-Pooling with Avg-Pooling had great results.
+
+Since there are more features to a class of 43 streetsigns than there are in the 0-10 digits that we initially wrote our LeNet for, I also experimented with increasing the sizes of the 2 convolutional layers since those layers represent features.  I increased the values approximately proportionally to the difference in the number of total output-classes between digits and our set of German traffic signs. Further tuning was done by just testing the results and finding what sizes performed well in the first 10 epochs of training.
+
+The convolutional layers had a depth of 16 and 32 respectively, instead of 6 and 16.
+
+After various changes were able to get the accuracy pretty high, I then added Dropout in the two gaps between the three fully-connected layers to prevent overfitting.  Any time I experimented with dropout before we had high accuracy, it actually decreased the accuracy (because we were still underfitting at that point, and dropout moves the model more towards underfitting).  The addition of dropout seems to have allowed my network to continue to make gains when running to 20 or 30 epochs.
+
+My final model consisted of the following layers:
+
+| Layer         		|     Description	        					| 
+|:---------------------:|:---------------------------------------------:| 
+| Input         		| 32x32x1 grayscale image   							| 
+| Convolution 5x5     	| 1x1 stride, valid padding, outputs 28x28x16 	|
+| RELU					|												|
+| Avg pooling	      	| 2x2 stride, valid padding outputs 14x14x16 				|
+| Convolution 5x5	    | 1x1 stride, valid padding, outputs 10x10x32 	|
+| RELU					|												|
+| Avg pooling	      	| 2x2 stride, valid padding outputs 5x5x32 				|
+| Flattening					|	So that we can send the data into fully-connected layers. output is flat 800			|
+| Fully connected		| Fully connected layer. Input 800, output 120					|
+| RELU					|												|
+| Dropout					|	To prevent overfitting Keep_prob 0.7 for training (always 1.0 for eval)	|
+| Fully connected		| Fully connected layer. Input 120, output 84					|
+| RELU					|												|
+| Dropout					|	To prevent overfitting Keep_prob 0.7 for training (always 1.0 for eval)	|
+| Fully connected		| Fully connected layer. Input 84, output number_of_classes (43 in this case)					|
+
+
+
+
+
 
 
 
 NOTE: CURRENTLY THIS FAR IN THE WRITEUP... GOING TO PULL SOME IMAGES INTO THE REPO THEN CONTINUE...
 
 
-
-
-
-
-
-
-
-
-
-My final model consisted of the following layers:
-
-| Layer         		|     Description	        					| 
-|:---------------------:|:---------------------------------------------:| 
-| Input         		| 32x32x3 RGB image   							| 
-| Convolution 3x3     	| 1x1 stride, same padding, outputs 32x32x64 	|
-| RELU					|												|
-| Max pooling	      	| 2x2 stride,  outputs 16x16x64 				|
-| Convolution 3x3	    | etc.      									|
-| Fully connected		| etc.        									|
-| Softmax				| etc.        									|
-|						|												|
-|						|												|
- 
 
 
 ####3. Describe how you trained your model. The discussion can include the type of optimizer, the batch size, number of epochs and any hyperparameters such as learning rate.
