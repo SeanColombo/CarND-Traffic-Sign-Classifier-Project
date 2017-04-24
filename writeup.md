@@ -12,8 +12,8 @@ The goals / steps of this project are the following:
 
 [//]: # (Image References)
 
-[histogram_1]: ./examples/visualization.png "Visualization - Histogram of images per class"
-[histogram_1]: ./examples/visualization_moredata.jpg "Histogram of images per class after adding additional data (via rotating other data)"
+[histogram_1]: ./writeup_images/visualization.png "Visualization - Histogram of images per class"
+[histogram_2]: ./writeup_images/visualization_moredata.png "Histogram of images per class after adding additional data (via rotating other data)"
 [image3]: ./examples/random_noise.jpg "Random Noise"
 [image4]: ./examples/placeholder.png "Traffic Sign 1"
 [image5]: ./examples/placeholder.png "Traffic Sign 2"
@@ -61,13 +61,28 @@ To first address the "Stand Out Suggestions", the prior histogram revealed that 
 
 To solve this problem, I created a minimum number of images (originally I used the mean which is around 750, but experimentation found that 500 works at least as well) and then generated images to fill out all of the undersized classes.  The extra images were created by repeatedly selecting a random image from the input data-set, then rotating it by +/- 5-degrees to 20-degrees (the angle and the sign were chosen randomly).
 
-![histogram of classes after adding additional images][histogram_2]
+| ![original data histogram][histogram_1] | ![histogram of classes after adding additional images][histogram_2] |
+|:---:|:---:|
+| Initial dataset | After adding rotated images |
 
 This made the data much more helpful on many classes. Since the additional data was based off of slight transforms of a very small amount of input-data, these classes will still be less robust than if they had real data, but this is a fairly effect stop-gap that can be a great alternative when it is not practical to collect additional data for training.
 
 **Additional Preprocessing**
 
+I tried several preprocessing methods and analyzed their effect to decide on whether to keep them.
 
+**Grayscale** - Color is slightly useful for road signs when humans are interpreting them, but experimentally grayscaling the images consistently resulted in higher accuracy for the network.  This implies to me that the color (given the junkiness of original images) was actually serving to confuse the network more than help.  My hypothesis is that we're feeding raw pixel numbers to the CNN, whereas a human brain would itself be pre-processing and classifying the colors. If we see a red street-sign, regardless of the angle, the lighting conditions or a slight amount of fading due to age, we're going to see "red". Our input data could be seeing (255, 0, 0) vs (200, 100, 150) though. If we thought that color was extremely important, we could pre-process the input colors to "snap" the data to match a pallet of actual colors used in German street signs.
+
+Grayscale cuts the image data in one-third (one channel instead of 3) so it should increase performance as well.
+
+**Adaptive Histogram Equalization** - This adds contrast to the images. It was extremely time-prohibitive though and was more expensive than training the entire network. One workaround for this would have been to do this preprocessing once, then write all of the derived images out to a separate Pickle file and then load that on future runs. This would have been a bunch of work though, given that we were already at our target accuracy by the time this issue came up, I did not pursue this path further.
+
+**Normalization** - This was one of the first things I tried, and I tried several types of normalization. I used the (data-128)/128 trick mentioned in the notebook, used normalization based on the actual mean and sum (these normalize from -1.0 to 1.0), and even normalized inside of a nice 0.1 to 0.9 box (which would prevent very high and very low values from being washed away or overpowered, and shockingly none of the normalizations resulted in accuracy improvements for me.
+
+This is not consistent with what I would have expected, so I did some debugging to print out the raw pixel values before and after normalization and they DID appear in the ranges that I would have expected from normalization.  When I switched my normalization function to just be a NO-OP, accuracy was always the best.  This is a bit surprising for me and is one of the things I would return to investigate further if I ever needed to increase accuracy even more.
+
+
+#### 2. Describe what your final model architecture looks like including model type, layers, layer sizes, connectivity, etc.) Consider including a diagram and/or table describing the final model.
 
 
 
@@ -83,31 +98,6 @@ NOTE: CURRENTLY THIS FAR IN THE WRITEUP... GOING TO PULL SOME IMAGES INTO THE RE
 
 
 
-
-
-
-
-
-As a first step, I decided to convert the images to grayscale because ...
-
-Here is an example of a traffic sign image before and after grayscaling.
-
-![alt text][image2]
-
-As a last step, I normalized the image data because ...
-
-I decided to generate additional data because ... 
-
-To add more data to the the data set, I used the following techniques because ... 
-
-Here is an example of an original image and an augmented image:
-
-![alt text][image3]
-
-The difference between the original data set and the augmented data set is the following ... 
-
-
-####2. Describe what your final model architecture looks like including model type, layers, layer sizes, connectivity, etc.) Consider including a diagram and/or table describing the final model.
 
 My final model consisted of the following layers:
 
