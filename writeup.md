@@ -16,12 +16,12 @@ The goals / steps of this project are the following:
 [histogram_2]: ./writeup_images/visualization_moredata.png "Histogram of images per class after adding additional data (via rotating other data)"
 [logs_1]: ./writeup_images/logs_page1.jpg "Logs - Page 1"
 [logs_2]: ./writeup_images/logs_page2.jpg "Logs - Page 2"
-[image3]: ./examples/random_noise.jpg "Random Noise"
-[image4]: ./examples/placeholder.png "Traffic Sign 1"
-[image5]: ./examples/placeholder.png "Traffic Sign 2"
-[image6]: ./examples/placeholder.png "Traffic Sign 3"
-[image7]: ./examples/placeholder.png "Traffic Sign 4"
-[image8]: ./examples/placeholder.png "Traffic Sign 5"
+[children_crossing]: ./web_signs/children_crossing.jpg "Children Crossing"
+[no_entry]: ./web_signs/no_entry.jpg "No Entry"
+[no_truck_passing]: ./web_signs/no_truck_passing.jpg "No Passing by Trucks"
+[right_turn]: ./web_signs/right_turn.jpg "Right Turn Ahead"
+[stop]: ./web_signs/stop.jpg "Stop"
+[network_visualization]: ./writeup_images/network_visualization.png "Feature Map Visualization"
 
 ## Rubric Points
 ### Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/481/view) individually and describe how I addressed each point in my implementation.  
@@ -175,6 +175,25 @@ My final model results were:
 * **test set accuracy of 0.944**
 
 
+ 
+
+### Test a Model on New Images
+
+#### 1. Choose five German traffic signs found on the web and provide them in the report. For each image, discuss what quality or qualities might be difficult to classify.
+
+Here are five German traffic signs that I found on the web.  The story of how they were chosen is actually interesting.
+
+I started with a google image search for "German Traffic Signs" and used the setting "Labeled for Non-Commercial Reuse" and of type "Photo" (because that's what we're really trying to do here... classifying vector-art with no background is probably easy and isn't very helpful to a self-driving car)... and then found that most of the results are for sign types that aren't even recognized in our dataset. If we were really to drive in Germany, we would need better training data!  Since most of the labeled-for-reuse signs were too easy (which makes sense... photographers like to take really clear, direct pictures of things), I decided to take a different approach to search the subsset of images which are known to be good test-cases for traffic sign classifiers...
+
+To ensure I'd find images that made sense for our data, I googled "german traffic signs carnd" (carnd is the name of our program... so obviously the google results for this search should be flooded with suitable images for testing!) and found a github which had example images in it: https://github.com/netaz/carnd_traffic_sign_classifier ...I didn't look at his network's results, so I don't know if it's a particularly easy/hard set or not; but hopefully our networks are different enough that we'd still get potentially different results anyway.
+
+![Children Crossing][children_crossing] ![No Entry][no_entry] ![No Truck Passing][no_truck_passing] 
+![Right Turn][right_turn] ![Stop][stop]
+
+The first image looks difficult because of the distortion. It's very unclear what angle this photo could have been taken from. Perhaps, slightly above and with a distorted lens? There also appears to be some color artifacts on the bottom.
+
+The "no_entry" sign looks easy, the next three all look like good candidates that would be fun to see how the classifier could deal with them. The "stop" sign is a little washed out with glare near the top-right but it is a very distinctive sign that seems like it should still be easy (be sure to look at the actual results below for the real story).
+
 
 
 
@@ -182,52 +201,79 @@ NOTE: CURRENTLY THIS FAR IN THE WRITEUP... <------------------------------------
 
 
 
- 
+#### 2. Discuss the model's predictions on these new traffic signs and compare the results to predicting on the test set. At a minimum, discuss what the predictions were, the accuracy on these new predictions, and compare the accuracy to the accuracy on the test set (OPTIONAL: Discuss the results in more detail as described in the "Stand Out Suggestions" part of the rubric).
 
-###Test a Model on New Images
-
-####1. Choose five German traffic signs found on the web and provide them in the report. For each image, discuss what quality or qualities might be difficult to classify.
-
-Here are five German traffic signs that I found on the web:
-
-![alt text][image4] ![alt text][image5] ![alt text][image6] 
-![alt text][image7] ![alt text][image8]
-
-The first image might be difficult to classify because ...
-
-####2. Discuss the model's predictions on these new traffic signs and compare the results to predicting on the test set. At a minimum, discuss what the predictions were, the accuracy on these new predictions, and compare the accuracy to the accuracy on the test set (OPTIONAL: Discuss the results in more detail as described in the "Stand Out Suggestions" part of the rubric).
+One fascinating thing about running this model is that as I was working to get my output-feature-map code to run, I completely retrained my Neural Network several times and the accuracy actually changed.  The accuracy was usually 0.60 but I saw it hit 0.40 and 0.80 (the extra one it picked up was the stop-sign). Most of the time, it was 0.60 accuracy though.  The common results are below...
 
 Here are the results of the prediction:
 
 | Image			        |     Prediction	        					| 
 |:---------------------:|:---------------------------------------------:| 
-| Stop Sign      		| Stop sign   									| 
-| U-turn     			| U-turn 										|
-| Yield					| Yield											|
-| 100 km/h	      		| Bumpy Road					 				|
-| Slippery Road			| Slippery Road      							|
+| Children Crossing      		| Road Work   									| 
+| No entry     			| No entry 										|
+| No passing for vehicles over 3.5 metric tons | No passing for vehicles over 3.5 metric tons	|
+| Turn right ahead	      		| Turn right ahead					 				|
+| Stop			| Speed limit (70km/h)     							|
 
 
-The model was able to correctly guess 4 of the 5 traffic signs, which gives an accuracy of 80%. This compares favorably to the accuracy on the test set of ...
-
-####3. Describe how certain the model is when predicting on each of the five new images by looking at the softmax probabilities for each prediction. Provide the top 5 softmax probabilities for each image along with the sign type of each probability. (OPTIONAL: as described in the "Stand Out Suggestions" part of the rubric, visualizations can also be provided such as bar charts)
-
-The code for making predictions on my final model is located in the 11th cell of the Ipython notebook.
-
-For the first image, the model is relatively sure that this is a stop sign (probability of 0.6), and the image does contain a stop sign. The top five soft max probabilities were
-
-| Probability         	|     Prediction	        					| 
-|:---------------------:|:---------------------------------------------:| 
-| .60         			| Stop sign   									| 
-| .20     				| U-turn 										|
-| .05					| Yield											|
-| .04	      			| Bumpy Road					 				|
-| .01				    | Slippery Road      							|
+The model was able to consistently correctly guess 3 (occasionally 4) of the 5 traffic signs, which gives an accuracy of 60% (occasionally 80%). This is reasonably parallel to the validation set when testing on such a small sample-set of 5 images.
 
 
-For the second image ... 
+#### 3. Describe how certain the model is when predicting on each of the five new images by looking at the softmax probabilities for each prediction. Provide the top 5 softmax probabilities for each image along with the sign type of each probability. (OPTIONAL: as described in the "Stand Out Suggestions" part of the rubric, visualizations can also be provided such as bar charts)
+
+The code for showing softmax predictions on my final model is located in the 26th cell of the Ipython notebook.
+
+The "Children Crossing" was always a struggle (probably due to the distortion and noise in the image).  As I saw repeatedly, when guessing incorrectly, the model was usually unsure of its answer.
+
+Image 0 (sign is actually 'Children crossing'):
+   [PROB]  - [SIGN]
+   0.486304 - Road work
+   0.275924 - Beware of ice/snow
+   0.221523 - Right-of-way at the next intersection
+   0.00726475 - Road narrows on the right
+   0.0037681 - Children crossing
+
+The next 3 images were all classfied correctly. It's interesting to notice how extremly high their confidence was. They were all at least 0.9997 certain. That's pretty certain!
+
+Image 1 (sign is actually 'No entry'):
+   [PROB]  - [SIGN]
+   0.999989 - No entry
+   1.05961e-05 - Stop
+   8.40141e-09 - Turn left ahead
+   3.39395e-10 - Yield
+   8.76705e-11 - Keep left
+
+Image 2 (sign is actually 'No passing for vehicles over 3.5 metric tons'):
+   [PROB]  - [SIGN]
+   1.0 - No passing for vehicles over 3.5 metric tons
+   8.64994e-08 - No passing
+   2.2182e-12 - Speed limit (80km/h)
+   9.62741e-15 - Priority road
+   7.56255e-15 - Ahead only
+
+Image 3 (sign is actually 'Turn right ahead'):
+   [PROB]  - [SIGN]
+   0.999736 - Turn right ahead
+   0.000197557 - Road work
+   4.93255e-05 - Stop
+   4.8891e-06 - Right-of-way at the next intersection
+   4.86125e-06 - Vehicles over 3.5 metric tons prohibited
+
+The most interesting result for me, was that the "Stop" sign changed a bunch.  It was sometimes predicted correctly; sometimes when I retrained the whole model, it was quite confident that the Stop sign was "No entry"; and on the final run, the model had no idea it was a stop sign and thought it was almost certainly a Speed Limit of some sort.  While it's fairly confident at 0.95, perhaps a confidence of 0.99+ is how we can know whether the classifier was having trouble figuring out a sign.
+
+Again, this parallels human thought processes. If you see a washedout stop-sign that's reflecting a glare in your eyes, perhaps you've assumed it's a speed-sign, but you may keep looking longer because you're only 95% certain (which is about a 1/20 chance that you just might be running a stop-sign!). Fortunately, humans also have other metadata to go on (we expect to see a stop sign at an intersection, not a speed limit sign). But I digress! Here are the rather embarassing softmax values for the Stop sign:
+
+Image 4 (sign is actually 'Stop'):
+   [PROB]  - [SIGN]
+   0.953781 - Speed limit (70km/h)
+   0.0449219 - Speed limit (30km/h)
+   0.000849137 - Speed limit (20km/h)
+   0.00026818 - No vehicles
+   0.00013589 - Speed limit (50km/h)
 
 ### (Optional) Visualizing the Neural Network (See Step 4 of the Ipython notebook for more details)
-####1. Discuss the visual output of your trained network's feature maps. What characteristics did the neural network use to make classifications?
 
+#### 1. Discuss the visual output of your trained network's feature maps. What characteristics did the neural network use to make classifications?
 
+I used the provided code to visualize the 2nd convolutional layer of the network after full training
+![Feature Map Visualization][network_visualization]
