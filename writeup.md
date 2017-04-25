@@ -275,5 +275,10 @@ Image 4 (sign is actually 'Stop'):
 
 #### 1. Discuss the visual output of your trained network's feature maps. What characteristics did the neural network use to make classifications?
 
-I used the provided code to visualize the 2nd convolutional layer of the network after full training
+I used the provided code to visualize the 2nd convolutional layer of the network after full training, when it was trying to classify the "No Entry" image. What this does is show what features it finds to be important in general and particularly in the No Entry image. As we can see, there are a lot of prominent horizontal bars, and many of the features show that they are concerned with the general shape of the sign. You can clearly distinguish rounded sign edges showing up in many FeatureMaps, but it is particularly pronounced in 0, 23, and 31.
+
+One thing to keep in mind is that this is rendering a grayscale of weights at the 2nd convolutional layer and higher weights mean that a feature has more impact on classifying the item. Since higher weights correspond to higher pixel values (black is 0, white is 255) then the more WHITE is seen, the more important that feature is.  So whatever Feature 28 is, it doesn't appear prominently in the No Entry sign, whereas something like Feature 20 might be a feature for the solid white bar that actually appears in the image (even if the sign was always a solid black bar, it would be white in the feature-map).
+
 ![Feature Map Visualization][network_visualization]
+
+Since the "hidden layer"s of a Convolutional Neural Network are often a black-box, it was great to be able to visualize the features in a layer. It could be a fun experiment to feed other images into the same visualization and see what they notice.
