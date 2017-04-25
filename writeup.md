@@ -37,11 +37,11 @@ You're reading it! and here is a link to my [project code](https://github.com/ud
 
 #### 1. Provide a basic summary of the data set. In the code, the analysis should be done using python, numpy and/or pandas methods rather than hardcoding results manually.
 
-In the Jupyter notebook I calculated the size of the dataset (
+In the Jupyter notebook I calculated the size of the dataset
 * The size of training set is 34799 images
 * The size of the validation set is 4410 images
 * The size of test set is 12630 images
-* The shape of a traffic sign image is 32x32 (the pickle file is scaled down from their original size)
+* The shape of a traffic sign image is 32x32x3 (the pickle file is scaled down from their original size, and there is a depth of 3 because of the 3 color channels in the image)
 * The number of unique classes/labels in the data set is 43
 
 #### 2. Include an exploratory visualization of the dataset.
